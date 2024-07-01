@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:13
+    ports:
+      - "9999:5432"
+    environment:
+      POSTGRES_USER: userfutebol
+      POSTGRES_PASSWORD: passwordfutebol
+      POSTGRES_DB: futebol
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:

@@ -1,0 +1,216 @@
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// model Country {
+//   id      Int      @id @default(autoincrement())
+//   name    String   @unique
+//   code    String?
+//   flag    String?
+//   leagues League[]
+//   teams   Team[]
+// }
+
+// model League {
+//   id        Int      @id @default(autoincrement())
+//   name      String
+//   type      String
+//   logo      String?
+//   country   Country  @relation(fields: [countryId], references: [id])
+//   countryId Int
+//   seasons   Season[]
+// }
+
+// model Season {
+//   id         Int         @id @default(autoincrement())
+//   year       Int
+//   start      DateTime
+//   end        DateTime
+//   current    Boolean
+//   league     League      @relation(fields: [leagueId], references: [id])
+//   leagueId   Int
+//   statistics Statistic[]
+// }
+
+// model Team {
+//   id        Int      @id @default(autoincrement())
+//   name      String   @unique
+//   logo      String?
+//   country   Country  @relation(fields: [countryId], references: [id])
+//   countryId Int
+//   stadium   Stadium? @relation(fields: [stadiumId], references: [id])
+//   stadiumId Int?
+//   players   Player[]
+//   coach     Coach?   @relation(fields: [coachId], references: [id])
+//   coachId   Int?     @unique
+// }
+
+// model Coach {
+//   id          Int    @id @default(autoincrement())
+//   name        String
+//   nationality String
+//   team        Team?
+//   teamId      Int?   @unique
+// }
+
+// model Stadium {
+//   id    Int    @id @default(autoincrement())
+//   name  String @unique
+//   city  String
+//   teams Team[]
+// }
+
+// model Player {
+//   id          Int         @id @default(autoincrement())
+//   name        String
+//   age         Int
+//   nationality String
+//   position    String
+//   team        Team        @relation(fields: [teamId], references: [id])
+//   teamId      Int
+//   statistics  Statistic[]
+// }
+
+// model Statistic {
+//   id       Int    @id @default(autoincrement())
+//   goals    Int
+//   assists  Int
+//   games    Int
+//   minutes  Int
+//   player   Player @relation(fields: [playerId], references: [id])
+//   playerId Int
+//   season   Season @relation(fields: [seasonId], references: [id])
+//   seasonId Int
+// }
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Country {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  code    String?
+  flag    String?
+  leagues League[]
+  teams   Team[]
+}
+
+model League {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  logo      String?
+  country   Country  @relation(fields: [countryId], references: [id])
+  countryId Int
+  seasons   Season[]
+  fixtures  Fixture[]
+}
+
+model Season {
+  id         Int         @id @default(autoincrement())
+  year       Int
+  start      DateTime
+  end        DateTime
+  current    Boolean
+  league     League      @relation(fields: [leagueId], references: [id])
+  leagueId   Int
+  statistics Statistic[]
+  fixtures   Fixture[]
+}
+
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  logo      String?
+  country   Country  @relation(fields: [countryId], references: [id])
+  countryId Int
+  stadium   Stadium? @relation(fields: [stadiumId], references: [id])
+  stadiumId Int?
+  players   Player[]
+  coach     Coach?   @relation(fields: [coachId], references: [id])
+  coachId   Int?     @unique
+  homeFixtures Fixture[] @relation("HomeTeamFixtures")
+  awayFixtures Fixture[] @relation("AwayTeamFixtures")
+}
+
+model Coach {
+  id          Int    @id @default(autoincrement())
+  name        String
+  nationality String
+  team        Team?
+  teamId      Int?   @unique
+}
+
+model Stadium {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  city  String
+  teams Team[]
+  fixtures Fixture[]
+}
+
+model Player {
+  id          Int         @id @default(autoincrement())
+  name        String
+  age         Int
+  nationality String
+  position    String
+  team        Team        @relation(fields: [teamId], references: [id])
+  teamId      Int
+  statistics  Statistic[]
+}
+
+model Statistic {
+  id       Int    @id @default(autoincrement())
+  goals    Int
+  assists  Int
+  games    Int
+  minutes  Int
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+  seasonId Int
+}
+
+model Fixture {
+  id          Int       @id @default(autoincrement())
+  fixtureId   Int       @unique
+  referee     String?
+  timezone    String
+  date        DateTime
+  timestamp   Int
+  status      String
+  elapsed     Int
+  venue       Stadium   @relation(fields: [venueId], references: [id])
+  venueId     Int
+  league      League    @relation(fields: [leagueId], references: [id])
+  leagueId    Int
+  season      Season    @relation(fields: [seasonId], references: [id])
+  seasonId    Int
+  homeTeam    Team      @relation("HomeTeamFixtures", fields: [homeTeamId], references: [id])
+  homeTeamId  Int
+  awayTeam    Team      @relation("AwayTeamFixtures", fields: [awayTeamId], references: [id])
+  awayTeamId  Int
+  goalsHome   Int?
+  goalsAway   Int?
+  halftimeHome Int?
+  halftimeAway Int?
+  fulltimeHome Int?
+  fulltimeAway Int?
+  extratimeHome Int?
+  extratimeAway Int?
+  penaltyHome Int?
+  penaltyAway Int?
+}
